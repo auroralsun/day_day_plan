@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface DayPlanRepository {
     fun getDayPlan(date: LocalDate): Flow<DayPlan>
 
-    suspend fun addScheduleItem(item: ScheduleItem)
+    suspend fun addScheduleItem(item: ScheduleItem): Long
 
     suspend fun updateScheduleItem(item: ScheduleItem)
 
@@ -23,7 +23,7 @@ interface DayPlanRepository {
 
     suspend fun deleteScheduleItem(id: Long)
 
-    suspend fun addTodoItem(item: TodoItem)
+    suspend fun addTodoItem(item: TodoItem): Long
 
     suspend fun updateTodoItem(item: TodoItem)
 
