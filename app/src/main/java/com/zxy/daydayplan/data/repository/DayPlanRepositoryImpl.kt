@@ -41,8 +41,8 @@ class DayPlanRepositoryImpl(
         }
     }
 
-    override suspend fun addScheduleItem(item: ScheduleItem) {
-        scheduleDao.insert(item.toEntity())
+    override suspend fun addScheduleItem(item: ScheduleItem): Long {
+        return scheduleDao.insert(item.toEntity())
     }
 
     override suspend fun updateScheduleItem(item: ScheduleItem) {
@@ -66,13 +66,13 @@ class DayPlanRepositoryImpl(
         scheduleDao.deleteById(id)
     }
 
-    override suspend fun addTodoItem(item: TodoItem) {
+    override suspend fun addTodoItem(item: TodoItem): Long {
         val sortOrder = if (item.id == 0L) {
             todoDao.getMaxSortOrder(item.date.toString()) + 1
         } else {
             item.sortOrder
         }
-        todoDao.insert(item.copy(sortOrder = sortOrder).toEntity())
+        return todoDao.insert(item.copy(sortOrder = sortOrder).toEntity())
     }
 
     override suspend fun updateTodoItem(item: TodoItem) {

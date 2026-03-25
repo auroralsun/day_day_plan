@@ -143,14 +143,16 @@ class MainViewModel(
                 reminderMinutesBefore = reminderMinutesBefore
             )
 
-            if (id == 0L) {
-                repository.addScheduleItem(item)
+            val savedItem = if (id == 0L) {
+                val newId = repository.addScheduleItem(item)
+                item.copy(id = newId)
             } else {
                 repository.updateScheduleItem(item)
+                item
             }
 
             if (!repeatDaily) {
-                reminderScheduler.scheduleScheduleReminder(item)
+                reminderScheduler.scheduleScheduleReminder(savedItem)
             }
             closeDialog()
         }
@@ -182,12 +184,14 @@ class MainViewModel(
                 reminderEnabled = reminderEnabled,
                 reminderMinutesBefore = reminderMinutesBefore
             )
-            if (id == 0L) {
-                repository.addTodoItem(item)
+            val savedItem = if (id == 0L) {
+                val newId = repository.addTodoItem(item)
+                item.copy(id = newId)
             } else {
                 repository.updateTodoItem(item)
+                item
             }
-            reminderScheduler.scheduleTodoReminder(item)
+            reminderScheduler.scheduleTodoReminder(savedItem)
             closeDialog()
         }
     }

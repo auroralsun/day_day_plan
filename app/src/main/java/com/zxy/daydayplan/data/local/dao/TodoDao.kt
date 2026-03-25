@@ -24,7 +24,7 @@ interface TodoDao {
     suspend fun getMaxSortOrder(date: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: TodoEntity)
+    suspend fun insert(item: TodoEntity): Long
 
     @Update
     suspend fun update(item: TodoEntity)
