@@ -2,6 +2,8 @@ package com.zxy.daydayplan.reminder
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.os.Build
+import androidx.core.app.AlarmManagerCompat
 import android.content.Context
 import android.content.Intent
 import com.zxy.daydayplan.domain.model.CompletionStatus
@@ -108,11 +110,21 @@ class ReminderScheduler(private val context: Context) {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        alarmManager.setAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            pendingIntent
-        )
+        val triggerAtMillis = triggerAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        if (canScheduleExactAlarms()) {
+            AlarmManagerCompat.setExactAndAllowWhileIdle(
+                alarmManager,
+                AlarmManager.RTC_WAKEUP,
+                triggerAtMillis,
+                pendingIntent
+            )
+        } else {
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerAtMillis,
+                pendingIntent
+            )
+        }
     }
 
     private fun cancel(requestCode: Int, intent: Intent) {
@@ -128,6 +140,10 @@ class ReminderScheduler(private val context: Context) {
     private fun scheduleRequestCode(id: Long): Int = ("schedule-$id").hashCode()
     private fun recurringRequestCode(id: Long): Int = ("recurring-$id").hashCode()
     private fun todoRequestCode(id: Long): Int = ("todo-$id").hashCode()
+
+    private fun canScheduleExactAlarms(): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
+    }
 }
 
 private fun String.toLocalTimeOrNull(): LocalTime? {
